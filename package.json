@@ -1,0 +1,26 @@
+{
+  "name": "regular-ui-dragdrop",
+  "description": "Draggable and Droppable Components of Regular UI",
+  "version": "0.1.0",
+  "author": "Sensen <rainforest92@126.com>",
+  "repository": "git://github.com/regular-ui/regular-ui-dragdrop.git",
+  "homepage": "http://regular-ui.github.io",
+  "bugs": {
+    "url": "http://github.com/regular-ui/regular-ui-dragdrop/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "regular",
+    "ui",
+    "drag",
+    "drop"
+  ],
+  "tags": [
+    "regular",
+    "ui",
+    "drag",
+    "drop"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}
