@@ -7,7 +7,7 @@
 
 'use strict';
 
-var _ = require('../base/_.js');
+var _ = require('regular-ui-base/src/_');
 var dragDrop = require('./dragDrop.js');
 
 var isFirefox = navigator.userAgent.indexOf('Firefox') >= 0;

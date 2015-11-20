@@ -3,7 +3,7 @@
   "description": "Draggable and Droppable Components of Regular UI",
   "version": "0.1.0",
   "author": "Sensen <rainforest92@126.com>",
-  "repository": "git://github.com/regular-ui/regular-ui-dragdrop.git",
+  "repository": "regular-ui/regular-ui-dragdrop",
   "homepage": "http://regular-ui.github.io",
   "bugs": {
     "url": "http://github.com/regular-ui/regular-ui-dragdrop/issues"
@@ -22,5 +22,7 @@
     "drop"
   ],
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "regular-ui-base": "regular-ui/regular-ui-base"
+  }
 }
