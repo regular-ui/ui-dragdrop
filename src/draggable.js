@@ -9,14 +9,13 @@
 
 var Component = require('regular-ui-base/src/component');
 var _ = require('regular-ui-base/src/_');
-var dragDrop = require('./dragDrop.js');
+var dragdrop = require('./dragdrop.js');
 
 /**
  * @class Draggable
  * @extend Component
  * @param {object}                  options.data                     =  绑定属性
- * @param {string|Dragable.Proxy|function='auto'}  options.data.proxy  @=> 拖拽时的图像。值为`auto`拖拽时，复制一个拖拽元素的图像（浏览器的默认设置），值为`empty`拖拽时不显示图像，可以用`<draggable.proxy>`自定义图像。也可以直接传入一个函数，要求返回{proxy: 图像元素, x: 横向偏移, y: 纵向偏移}。
- * @param {string}                  options.data.effect              => 效果（与浏览器的effectAllowed一致）。可选的值有`none`、`uninitialized`、`all`、`copy`、`move`、`link`、`copyLink`、`copyMove`、`linkMove`。
+ * @param {string|Dragable.Proxy|HTMLElement|function='clone'}  options.data.proxy  @=> 拖拽代理，即拖拽时显示的元素。默认值为`clone`，拖拽时拖起自身的一个拷贝；当值为`self`，拖拽时直接拖起自身。也可以用`<draggable.proxy>`自定义代理，或直接传入一个元素或函数。其他值表示不使用拖拽代理。
  * @param {object}                  options.data.data                => 拖拽时需要传递的数据
  * @param {boolean=false}           options.data.disabled            => 是否禁用
  */
@@ -30,7 +29,8 @@ var Draggable = Component.extend({
         _.extend(this.data, {
             proxy: 'clone',
             direction: 'all',
-            data: null
+            data: null,
+            attachClass: true
         });
         this.supr();
 
@@ -44,10 +44,12 @@ var Draggable = Component.extend({
         this.supr();
 
         this.$watch('disabled', function(newValue) {
-            if(newValue)
-                _.dom.delClass(inner, 'z-draggable');
-            else
-                _.dom.addClass(inner, 'z-draggable');
+            if(this.data.attachClass) {
+                if(newValue)
+                    _.dom.delClass(inner, 'z-draggable');
+                else
+                    _.dom.addClass(inner, 'z-draggable');
+            }
         });
     },
     _getProxy: function() {
@@ -59,12 +61,14 @@ var Draggable = Component.extend({
             var proxy = _.dom.element(this.data.proxy);
             var dimension = _.dom.getDimension(_.dom.element(this));
             this._initProxy(proxy, dimension);
+            document.body.appendChild(proxy);
             return proxy;
         } else if(this.data.proxy === 'clone') {
-            var proxy = _.dom.element(this);
-            var dimension = _.dom.getDimension(proxy);
-            proxy = proxy.cloneNode(true);
+            var self = _.dom.element(this);
+            var dimension = _.dom.getDimension(self);
+            proxy = self.cloneNode(true);
             this._initProxy(proxy, dimension);
+            self.parentElement.appendChild(proxy);
             return proxy;
         } else if(this.data.proxy === 'self') {
             var proxy = _.dom.element(this);
@@ -78,7 +82,7 @@ var Draggable = Component.extend({
         proxy.style.top = dimension.top + 'px';
         proxy.style.zIndex = '2000';
         proxy.style.position = 'fixed';
-        document.body.appendChild(proxy);
+        proxy.style.display = '';
     },
     _onMouseDown: function($event) {
         if(this.data.disabled)
@@ -92,142 +96,81 @@ var Draggable = Component.extend({
         var e = $event.event;
         $event.preventDefault();
 
-        if(dragDrop.dragging === false) {
-            _.extend(dragDrop, {
+        if(dragdrop.dragging === false) {
+            _.extend(dragdrop, {
                 dragging: true,
                 data: this.data.data,
                 proxy: this._getProxy(),
                 screenX: e.screenX,
                 screenY: e.screenY,
+                clientX: e.clientX,
+                clientY: e.clientY,
+                pageX: e.pageX,
+                pageY: e.pageY,
                 movementX: 0,
                 movementY: 0,
                 droppable: undefined
             }, true);
 
-            if(dragDrop.proxy)
-                _.dom.addClass(dragDrop.proxy, 'z-dragging');
-
-            this.$emit('dragstart', {
-                origin: this,
-                source: this,
-                target: dragDrop.proxy,
-                data: dragDrop.data,
-                screenX: dragDrop.screenX,
-                screenY: dragDrop.screenY,
-                movementX: dragDrop.movementX,
-                movementY: dragDrop.movementY
-            });
+            this._dragStart();
         } else {
-            dragDrop.movementX = e.screenX - dragDrop.screenX;
-            dragDrop.movementY = e.screenY - dragDrop.screenY;
-            dragDrop.screenX = e.screenX;
-            dragDrop.screenY = e.screenY;
+            _.extend(dragdrop, {
+                screenX: e.screenX,
+                screenY: e.screenY,
+                clientX: e.clientX,
+                clientY: e.clientY,
+                pageX: e.pageX,
+                pageY: e.pageY,
+                movementX: e.screenX - dragdrop.screenX,
+                movementY: e.screenY - dragdrop.screenY
+            }, true);
 
-            if(dragDrop.proxy) {
+            if(dragdrop.proxy) {
                 if(this.data.direction === 'all' || this.data.direction === 'horizontal')
-                    dragDrop.proxy.style.left = dragDrop.proxy.offsetLeft + dragDrop.movementX + 'px';
+                    dragdrop.proxy.style.left = dragdrop.proxy.offsetLeft + dragdrop.movementX + 'px';
                 if(this.data.direction === 'all' || this.data.direction === 'vertical')
-                    dragDrop.proxy.style.top = dragDrop.proxy.offsetTop + dragDrop.movementY + 'px';
+                    dragdrop.proxy.style.top = dragdrop.proxy.offsetTop + dragdrop.movementY + 'px';
             }
 
-            this.$emit('drag', {
-                origin: this,
-                source: this,
-                target: dragDrop.proxy,
-                data: this.data.data,
-                screenX: dragDrop.screenX,
-                screenY: dragDrop.screenY,
-                movementX: dragDrop.movementX,
-                movementY: dragDrop.movementY
-            });
+            this._drag();
 
             // Drop
-            dragDrop.proxy.style.display = 'none';
+            dragdrop.proxy.style.display = 'none';
             var pointElement = document.elementFromPoint(e.clientX, e.clientY);
-            dragDrop.proxy.style.display = '';
+            dragdrop.proxy.style.display = '';
 
-            var pointDroppable = dragDrop.droppables.find(function(droppable) {
+            var pointDroppable = dragdrop.droppables.find(function(droppable) {
                 return _.dom.element(droppable) === pointElement;
             });
 
-            if(dragDrop.droppable !== pointDroppable) {
-                pointDroppable && pointDroppable.$emit('dragenter', {
-                    origin: this,
-                    source: pointDroppable,
-                    target: pointElement,
-                    data: this.data.data,
-                    screenX: dragDrop.screenX,
-                    screenY: dragDrop.screenY,
-                    movementX: dragDrop.movementX,
-                    movementY: dragDrop.movementY
-                });
-                dragDrop.droppable && dragDrop.droppable.$emit('dragleave', {
-                    origin: this,
-                    source: dragDrop.droppable,
-                    target: undefined,
-                    data: this.data.data,
-                    screenX: dragDrop.screenX,
-                    screenY: dragDrop.screenY,
-                    movementX: dragDrop.movementX,
-                    movementY: dragDrop.movementY
-                });
-
-                dragDrop.droppable = pointDroppable;
-            } else {
-                pointDroppable && pointDroppable.$emit('dragover', {
-                    origin: this,
-                    source: pointDroppable,
-                    target: pointElement,
-                    data: this.data.data,
-                    screenX: dragDrop.screenX,
-                    screenY: dragDrop.screenY,
-                    movementX: dragDrop.movementX,
-                    movementY: dragDrop.movementY
-                });
-            }
+            if(dragdrop.droppable !== pointDroppable) {
+                dragdrop.droppable && this._dragLeave(dragdrop.droppable);
+                pointDroppable && this._dragEnter(pointDroppable);
+                dragdrop.droppable = pointDroppable;
+            } else
+                pointDroppable && this._dragOver(pointDroppable);
         }
     },
     _onBodyMouseUp: function($event) {
+        var e = $event.event;
         $event.preventDefault();
 
-        if(dragDrop.droppable) {
-            dragDrop.droppable.data.data = this.data.data;
-            dragDrop.droppable.$update();
-
-            dragDrop.droppable.$emit('drop', {
-                origin: this,
-                source: dragDrop.droppable,
-                target: _.dom.element(dragDrop.droppable),
-                data: this.data.data,
-                screenX: dragDrop.screenX,
-                screenY: dragDrop.screenY,
-                movementX: 0,
-                movementY: 0
-            });
-        }
-
-        this.$emit('dragend', {
-            origin: this,
-            source: this,
-            target: undefined
-        });
-
-        if(dragDrop.proxy) {
-            if(this.data.proxy instanceof Draggable.Proxy || this.data.proxy === 'clone')
-                document.body.removeChild(dragDrop.proxy);
-
-            _.dom.delClass(dragDrop.proxy, 'z-dragging');
-        }
+        dragdrop.droppable && this._drop(dragdrop.droppable);
+        this._dragEnd();
 
         this.cancel();
     },
     cancel: function() {
-        _.extend(dragDrop, {
+        _.extend(dragdrop, {
             dragging: false,
             data: null,
             proxy: null,
             screenX: 0,
             screenY: 0,
+            clientX: 0,
+            clientY: 0,
+            pageX: 0,
+            pageY: 0,
             movementX: 0,
             movementY: 0,
             droppable: undefined
@@ -235,15 +178,96 @@ var Draggable = Component.extend({
 
         _.dom.off(document.body, 'mousemove', this._onBodyMouseMove);
         _.dom.off(document.body, 'mouseup', this._onBodyMouseUp);
+    },
+    _dragStart: function(e) {
+        if(dragdrop.proxy && this.data.attachClass)
+            _.dom.addClass(dragdrop.proxy, 'z-dragging');
+
+        this.$emit('dragstart', _.extend({
+            origin: this,
+            source: this,
+            target: dragdrop.proxy
+        }, dragdrop));
+    },
+    _drag: function() {
+        this.$emit('drag', _.extend({
+            origin: this,
+            source: this,
+            target: dragdrop.proxy,
+         }, dragdrop));
+    },
+    _dragEnter: function(droppable) {
+        var element = _.dom.element(droppable);
+        droppable.data.attachClass && _.dom.addClass(element, 'z-dragover');
+        
+        droppable.$emit('dragenter', _.extend({
+            origin: this,
+            source: droppable,
+            target: element
+        }, dragdrop));
+    },
+    _dragLeave: function(droppable) {
+        var element = _.dom.element(droppable);
+        droppable.data.attachClass && _.dom.delClass(element, 'z-dragover');
+        
+        droppable.$emit('dragleave', _.extend({
+            origin: this,
+            source: droppable,
+            target: element
+        }, dragdrop));
+    },
+    _dragOver: function(droppable) {
+        var element = _.dom.element(droppable);
+        var dimension = _.dom.getDimension(element);
+
+        droppable.$emit('dragover', _.extend({
+            origin: this,
+            source: droppable,
+            target: element,
+            ratioX: (dragdrop.clientX - dimension.left)/dimension.width,
+            ratioY: (dragdrop.clientY - dimension.top)/dimension.height
+        }, dragdrop));
+    },
+    _drop: function(droppable) {
+        var element = _.dom.element(droppable);
+        droppable.data.attachClass && _.dom.delClass(element, 'z-dragover');
+        var dimension = _.dom.getDimension(element);
+
+        droppable.data.data = this.data.data;
+        droppable.$update();
+
+        droppable.$emit('drop', _.extend({
+            origin: this,
+            source: droppable,
+            target: element,
+            ratioX: (dragdrop.clientX - dimension.left)/dimension.width,
+            ratioY: (dragdrop.clientY - dimension.top)/dimension.height
+        }, dragdrop));
+    },
+    _dragEnd: function() {
+        this.$emit('dragend', {
+            origin: this,
+            source: this,
+            target: dragdrop.proxy
+        });
+
+        if(dragdrop.proxy) {
+            if(this.data.proxy instanceof Draggable.Proxy || this.data.proxy === 'clone')
+                dragdrop.proxy.parentElement.removeChild(dragdrop.proxy);
+
+            this.data.attachClass && _.dom.delClass(dragdrop.proxy, 'z-dragging');
+        }
     }
 });
 
-Draggable.Proxy = Regular.extend({
+Draggable.Proxy = Component.extend({
     name: 'draggable.proxy',
     template: '{#inc this.$body}',
     init: function() {
-        if(this.$outer instanceof Draggable)
+        if(this.$outer instanceof Draggable) {
+            _.dom.element(this).style.display = 'none';
             this.$outer.data.proxy = this;
+        }
     }
     // node: _.noop
 })
