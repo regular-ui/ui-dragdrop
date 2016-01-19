@@ -108,8 +108,8 @@ var Draggable = Component.extend({
             return;
         $event.preventDefault();
 
-        _.dom.on(document.body, 'mousemove', this._onBodyMouseMove);
-        _.dom.on(document.body, 'mouseup', this._onBodyMouseUp);
+        _.dom.on(document, 'mousemove', this._onBodyMouseMove);
+        _.dom.on(document, 'mouseup', this._onBodyMouseUp);
     },
     /**
      * @private
@@ -159,9 +159,13 @@ var Draggable = Component.extend({
                 return;
 
             // Drop
-            dragdrop.proxy.style.display = 'none';
-            var pointElement = document.elementFromPoint(e.clientX, e.clientY);
-            dragdrop.proxy.style.display = '';
+            var pointElement = null;
+            if(dragdrop.proxy) {
+                dragdrop.proxy.style.display = 'none';
+                pointElement = document.elementFromPoint(e.clientX, e.clientY);
+                dragdrop.proxy.style.display = '';
+            } else
+                pointElement = document.elementFromPoint(e.clientX, e.clientY);
 
             var pointDroppable = dragdrop.droppables.find(function(droppable) {
                 return _.dom.element(droppable) === pointElement;
@@ -212,8 +216,8 @@ var Draggable = Component.extend({
             droppable: undefined
         }, true);
 
-        _.dom.off(document.body, 'mousemove', this._onBodyMouseMove);
-        _.dom.off(document.body, 'mouseup', this._onBodyMouseUp);
+        _.dom.off(document, 'mousemove', this._onBodyMouseMove);
+        _.dom.off(document, 'mouseup', this._onBodyMouseUp);
     },
     /**
      * @private
@@ -316,6 +320,6 @@ Draggable.Proxy = Component.extend({
         }
     }
     // node: _.noop
-})
+});
 
 module.exports = Draggable;
