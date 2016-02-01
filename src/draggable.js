@@ -168,7 +168,13 @@ var Draggable = Component.extend({
                 pointElement = document.elementFromPoint(e.clientX, e.clientY);
 
             var pointDroppable = dragdrop.droppables.find(function(droppable) {
-                return _.dom.element(droppable) === pointElement;
+                var element = pointElement;
+                var target = _.dom.element(droppable);
+                while(element) {
+                    if(element === target)
+                        return true;
+                    element = element.parentElement;
+                }
             });
 
             if(dragdrop.droppable !== pointDroppable) {
@@ -228,11 +234,11 @@ var Draggable = Component.extend({
 
         /**
          * @event dragstart 拖拽开始时触发
-         * @property {object} source 事件发起对象，为当前draggable
-         * @property {object} target 事件目标对象，为拖拽代理元素
-         * @property {object} origin 事件源，即拖拽源，为当前draggable
-         * @property {object} data 拖拽时需要传递的数据
+         * @property {object} sender 事件发送对象，为当前draggable
+         * @property {object} origin 拖拽源，为当前draggable
+         * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
+         * @property {object} data 拖拽时需要传递的数据
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
          * @property {number} clientX 鼠标指针相对于浏览器的水平位置
@@ -244,9 +250,9 @@ var Draggable = Component.extend({
          * @property {function} cancel 取消拖拽操作
          */
         this.$emit('dragstart', _.extend({
-            source: this,
-            target: dragdrop.proxy,
+            sender: this,
             origin: this,
+            source: _.dom.element(this),
             proxy: dragdrop.proxy,
             cancel: this.cancel
         }, dragdrop));
@@ -257,11 +263,11 @@ var Draggable = Component.extend({
     _drag: function() {
         /**
          * @event drag 正在拖拽时触发
-         * @property {object} source 事件发起对象，为当前draggable
-         * @property {object} target 事件目标对象，为拖拽代理元素
-         * @property {object} origin 事件源，即拖拽源，为当前draggable
-         * @property {object} data 拖拽时需要传递的数据
+         * @property {object} sender 事件发送对象，为当前draggable
+         * @property {object} origin 拖拽源，为当前draggable
+         * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
+         * @property {object} data 拖拽时需要传递的数据
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
          * @property {number} clientX 鼠标指针相对于浏览器的水平位置
@@ -273,9 +279,9 @@ var Draggable = Component.extend({
          * @property {function} cancel 取消拖拽操作
          */
         this.$emit('drag', _.extend({
-            source: this,
-            target: dragdrop.proxy,
+            sender: this,
             origin: this,
+            source: _.dom.element(this),
             proxy: dragdrop.proxy,
             cancel: this.cancel
          }, dragdrop));
@@ -286,15 +292,15 @@ var Draggable = Component.extend({
     _dragEnd: function() {
         /**
          * @event dragend 拖拽结束时触发
-         * @property {object} source 事件发起对象，为当前draggable
-         * @property {object} target 事件目标对象，为拖拽代理元素
-         * @property {object} origin 事件源，即拖拽源，为当前draggable
+         * @property {object} sender 事件发送对象，为当前draggable
+         * @property {object} origin 拖拽源，为当前draggable
+         * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
          */
         this.$emit('dragend', {
-            source: this,
-            target: dragdrop.proxy,
+            sender: this,
             origin: this,
+            source: _.dom.element(this),
             proxy: dragdrop.proxy
         });
 

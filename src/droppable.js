@@ -65,9 +65,11 @@ var Droppable = Component.extend({
         
         /**
          * @event dragenter 拖拽进入该元素时触发
-         * @property {object} source 事件发起对象，为当前droppable
-         * @property {object} target 事件目标对象，为当前接收元素
-         * @property {object} origin 事件源，即拖拽源，为拖拽的draggable
+         * @property {object} sender 事件发送对象，为当前droppable
+         * @property {object} origin 拖拽源，为拖拽的draggable
+         * @property {object} source 拖拽起始元素
+         * @property {object} proxy 拖拽代理元素
+         * @property {object} target 拖拽目标元素
          * @property {object} data 拖拽时接收到的数据
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
@@ -80,9 +82,10 @@ var Droppable = Component.extend({
          * @property {function} cancel 取消拖拽操作
          */
         this.$emit('dragenter', _.extend({
-            source: this,
-            target: element,
+            sender: this,
             origin: origin,
+            source: _.dom.element(origin),
+            target: element,
             cancel: origin.cancel
         }, dragdrop));
     },
@@ -95,9 +98,11 @@ var Droppable = Component.extend({
         
         /**
          * @event dragleave 拖拽离开该元素时触发
-         * @property {object} source 事件发起对象，为当前droppable
-         * @property {object} target 事件目标对象，为当前接收元素
-         * @property {object} origin 事件源，即拖拽源，为拖拽的draggable
+         * @property {object} sender 事件发送对象，为当前droppable
+         * @property {object} origin 拖拽源，为拖拽的draggable
+         * @property {object} source 拖拽起始元素
+         * @property {object} proxy 拖拽代理元素
+         * @property {object} target 拖拽目标元素
          * @property {object} data 拖拽时接收到的数据
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
@@ -110,9 +115,10 @@ var Droppable = Component.extend({
          * @property {function} cancel 取消拖拽操作
          */
         this.$emit('dragleave', _.extend({
-            source: this,
-            target: element,
+            sender: this,
             origin: origin,
+            source: _.dom.element(origin),
+            target: element,
             cancel: origin.cancel
         }, dragdrop));
     },
@@ -125,9 +131,11 @@ var Droppable = Component.extend({
 
         /**
          * @event dragover 拖拽在该元素上方时触发
-         * @property {object} source 事件发起对象，为当前droppable
-         * @property {object} target 事件目标对象，为当前接收元素
-         * @property {object} origin 事件源，即拖拽源，为拖拽的draggable
+         * @property {object} sender 事件发送对象，为当前droppable
+         * @property {object} origin 拖拽源，为拖拽的draggable
+         * @property {object} source 拖拽起始元素
+         * @property {object} proxy 拖拽代理元素
+         * @property {object} target 拖拽目标元素
          * @property {object} data 拖拽时接收到的数据
          * @property {number} ratioX 鼠标指针相对于接收元素所占的长度比
          * @property {number} ratioY 鼠标指针相对于接收元素所占的高度比
@@ -142,9 +150,10 @@ var Droppable = Component.extend({
          * @property {function} cancel 取消拖拽操作
          */
         this.$emit('dragover', _.extend({
-            source: this,
-            target: element,
+            sender: this,
             origin: origin,
+            source: _.dom.element(origin),
+            target: element,
             ratioX: (dragdrop.clientX - dimension.left)/dimension.width,
             ratioY: (dragdrop.clientY - dimension.top)/dimension.height,
             cancel: origin.cancel
@@ -163,9 +172,11 @@ var Droppable = Component.extend({
 
         /**
          * @event drop 拖拽放置时触发
-         * @property {object} source 事件发起对象，为当前droppable
-         * @property {object} target 事件目标对象，为当前接收元素
-         * @property {object} origin 事件源，即拖拽源，为拖拽的draggable
+         * @property {object} sender 事件发送对象，为当前droppable
+         * @property {object} origin 拖拽源，为拖拽的draggable
+         * @property {object} source 拖拽起始元素
+         * @property {object} proxy 拖拽代理元素
+         * @property {object} target 拖拽目标元素
          * @property {object} data 拖拽时接收到的数据
          * @property {number} ratioX 鼠标指针相对于接收元素所占的长度比
          * @property {number} ratioY 鼠标指针相对于接收元素所占的高度比
@@ -179,9 +190,10 @@ var Droppable = Component.extend({
          * @property {number} movementY 鼠标指针垂直位置相对于上次操作的偏移量
          */
         this.$emit('drop', _.extend({
-            source: this,
-            target: element,
+            sender: this,
             origin: origin,
+            source: _.dom.element(origin),
+            target: element,
             ratioX: (dragdrop.clientX - dimension.left)/dimension.width,
             ratioY: (dragdrop.clientY - dimension.top)/dimension.height
         }, dragdrop));
