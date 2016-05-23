@@ -1,41 +1,31 @@
-/**
- * ------------------------------------------------------------
- * Draggable  拖拽
- * @author   sensen(rainforest92@126.com)
- * ------------------------------------------------------------
- */
-
-'use strict';
-
-var Component = require('regular-ui-base/src/component');
-var _ = require('regular-ui-base/src/_');
-var dragdrop = require('./dragdrop.js');
+import {Component, util as _} from 'regular-ui-base';
+import dragdrop from '../dragdrop';
 
 /**
  * @class Draggable
  * @extend Component
  * @param {object}                  options.data                     =  绑定属性
- * @param {object}                  options.data.data                => 拖拽时需要传递的数据
+ * @param {var}                     options.data.value               => 拖拽时需要传递的值
  * @param {string|Dragable.Proxy|Element|function='clone'}  options.data.proxy  @=> 拖拽代理，即拖拽时显示的元素。默认值为`clone`，拖拽时拖起自身的一个拷贝；当值为`self`，拖拽时直接拖起自身。也可以用`<draggable.proxy>`自定义代理，或直接传入一个元素或函数。其他值表示不使用拖拽代理。
  * @param {string='all'}            options.data.direction           => 拖拽代理可以移动的方向，`all`为任意方向，`horizontal`为水平方向，`vertical`为垂直方向
  * @param {boolean=false}           options.data.disabled            => 是否禁用
  * @param {string='z-draggable'}    options.data.class               => 可拖拽时（即disabled=false）给元素附加此class
  * @param {string='z-drag'}         options.data.dragClass           => 拖拽该元素时给元素附加此class
  */
-var Draggable = Component.extend({
+let Draggable = Component.extend({
     name: 'draggable',
     template: '{#inc this.$body}',
     /**
      * @protected
      */
-    config: function() {
-        _.extend(this.data, {
-            data: null,
+    config() {
+        this.data = Object.assign({
+            value: undefined,
             proxy: 'clone',
             direction: 'all',
             'class': 'z-draggable',
             dragClass: 'z-drag'
-        });
+        }, this.data);
         this.supr();
 
         this._onMouseDown = this._onMouseDown.bind(this);
@@ -46,44 +36,41 @@ var Draggable = Component.extend({
     /**
      * @protected
      */
-    init: function() {
-        var inner = _.dom.element(this);
+    init() {
+        let inner = _.dom.element(this);
         _.dom.on(inner, 'mousedown', this._onMouseDown);
         this.supr();
 
-        this.$watch('disabled', function(newValue) {
-            if(newValue)
-                _.dom.delClass(inner, this.data['class']);
-            else
-                _.dom.addClass(inner, this.data['class']);
-        });
+        this.$watch('disabled', (newValue) =>
+            _.dom[newValue ? 'delClass' : 'addClass'](inner, this.data['class']));
     },
     /**
      * @method _getProxy() 获取拖拽代理
      * @private
      * @return {Element} 拖拽代理元素
      */
-    _getProxy: function() {
+    _getProxy() {
+        let proxy;
         if(typeof this.data.proxy === 'function')
             return this.data.proxy();
         else if(this.data.proxy instanceof Element)
             return this.data.proxy;
         else if(this.data.proxy instanceof Draggable.Proxy) {
-            var proxy = _.dom.element(this.data.proxy);
-            var dimension = _.dom.getDimension(_.dom.element(this));
+            proxy = _.dom.element(this.data.proxy);
+            let dimension = _.dom.getDimension(_.dom.element(this));
             this._initProxy(proxy, dimension);
             document.body.appendChild(proxy);
             return proxy;
         } else if(this.data.proxy === 'clone') {
-            var self = _.dom.element(this);
-            var dimension = _.dom.getDimension(self);
+            let self = _.dom.element(this);
+            let dimension = _.dom.getDimension(self);
             proxy = self.cloneNode(true);
             this._initProxy(proxy, dimension);
             self.parentElement.appendChild(proxy);
             return proxy;
         } else if(this.data.proxy === 'self') {
-            var proxy = _.dom.element(this);
-            var dimension = _.dom.getDimension(proxy);
+            proxy = _.dom.element(this);
+            let dimension = _.dom.getDimension(proxy);
             this._initProxy(proxy, dimension);
             return proxy;
         }
@@ -93,7 +80,7 @@ var Draggable = Component.extend({
      * @private
      * @return {void}
      */
-    _initProxy: function(proxy, dimension) {
+    _initProxy(proxy, dimension) {
         proxy.style.left = dimension.left + 'px';
         proxy.style.top = dimension.top + 'px';
         proxy.style.zIndex = '2000';
@@ -103,7 +90,7 @@ var Draggable = Component.extend({
     /**
      * @private
      */
-    _onMouseDown: function($event) {
+    _onMouseDown($event) {
         if(this.data.disabled)
             return;
         $event.preventDefault();
@@ -114,14 +101,14 @@ var Draggable = Component.extend({
     /**
      * @private
      */
-    _onBodyMouseMove: function($event) {
-        var e = $event.event;
+    _onBodyMouseMove($event) {
+        let e = $event.event;
         $event.preventDefault();
 
         if(dragdrop.dragging === false) {
-            _.extend(dragdrop, {
+            Object.assign(dragdrop, {
                 dragging: true,
-                data: this.data.data,
+                value: this.data.value,
                 proxy: this._getProxy(),
                 screenX: e.screenX,
                 screenY: e.screenY,
@@ -132,11 +119,11 @@ var Draggable = Component.extend({
                 movementX: 0,
                 movementY: 0,
                 droppable: undefined
-            }, true);
+            });
 
             this._dragStart();
         } else {
-            _.extend(dragdrop, {
+            Object.assign(dragdrop, {
                 screenX: e.screenX,
                 screenY: e.screenY,
                 clientX: e.clientX,
@@ -145,7 +132,7 @@ var Draggable = Component.extend({
                 pageY: e.pageY,
                 movementX: e.screenX - dragdrop.screenX,
                 movementY: e.screenY - dragdrop.screenY
-            }, true);
+            });
 
             if(dragdrop.proxy) {
                 if(this.data.direction === 'all' || this.data.direction === 'horizontal')
@@ -159,23 +146,25 @@ var Draggable = Component.extend({
                 return;
 
             // Drop
-            var pointElement = null;
+            let pointElement = null;
             if(dragdrop.proxy) {
                 dragdrop.proxy.style.display = 'none';
                 pointElement = document.elementFromPoint(e.clientX, e.clientY);
                 dragdrop.proxy.style.display = '';
             } else
                 pointElement = document.elementFromPoint(e.clientX, e.clientY);
+            console.log(pointElement);
 
-            var pointDroppable = dragdrop.droppables.find(function(droppable) {
-                var element = pointElement;
-                var target = _.dom.element(droppable);
-                while(element) {
-                    if(element === target)
-                        return true;
-                    element = element.parentElement;
-                }
-            });
+            let pointDroppable = null;
+            while(pointElement) {
+                pointDroppable = dragdrop.droppables.find((droppable) =>
+                    _.dom.element(droppable) === pointElement);
+
+                if(pointDroppable)
+                    break;
+                else
+                    pointElement = pointElement.parentElement;
+            }
 
             if(dragdrop.droppable !== pointDroppable) {
                 dragdrop.droppable && dragdrop.droppable._dragLeave(this);
@@ -192,8 +181,8 @@ var Draggable = Component.extend({
     /**
      * @private
      */
-    _onBodyMouseUp: function($event) {
-        var e = $event.event;
+    _onBodyMouseUp($event) {
+        let e = $event.event;
         $event.preventDefault();
 
         dragdrop.droppable && dragdrop.droppable._drop(this);
@@ -204,13 +193,13 @@ var Draggable = Component.extend({
      * @public
      * @return {void}
      */
-    cancel: function() {
+    cancel() {
         this._dragEnd();
 
-        _.extend(dragdrop, {
+        Object.assign(dragdrop, {
             dragging: false,
-            data: null,
-            proxy: null,
+            value: undefined,
+            proxy: undefined,
             screenX: 0,
             screenY: 0,
             clientX: 0,
@@ -220,7 +209,7 @@ var Draggable = Component.extend({
             movementX: 0,
             movementY: 0,
             droppable: undefined
-        }, true);
+        });
 
         _.dom.off(document, 'mousemove', this._onBodyMouseMove);
         _.dom.off(document, 'mouseup', this._onBodyMouseUp);
@@ -228,7 +217,7 @@ var Draggable = Component.extend({
     /**
      * @private
      */
-    _dragStart: function(e) {
+    _dragStart() {
         if(dragdrop.proxy)
             _.dom.addClass(dragdrop.proxy, this.data.dragClass);
 
@@ -238,7 +227,7 @@ var Draggable = Component.extend({
          * @property {object} origin 拖拽源，为当前draggable
          * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
-         * @property {object} data 拖拽时需要传递的数据
+         * @property {var} value 拖拽时需要传递的值
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
          * @property {number} clientX 鼠标指针相对于浏览器的水平位置
@@ -249,25 +238,24 @@ var Draggable = Component.extend({
          * @property {number} movementY 鼠标指针垂直位置相对于上次操作的偏移量
          * @property {function} cancel 取消拖拽操作
          */
-        this.$emit('dragstart', _.extend({
+        this.$emit('dragstart', Object.assign({
             sender: this,
             origin: this,
             source: _.dom.element(this),
-            proxy: dragdrop.proxy,
             cancel: this.cancel
         }, dragdrop));
     },
     /**
      * @private
      */
-    _drag: function() {
+    _drag() {
         /**
          * @event drag 正在拖拽时触发
          * @property {object} sender 事件发送对象，为当前draggable
          * @property {object} origin 拖拽源，为当前draggable
          * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
-         * @property {object} data 拖拽时需要传递的数据
+         * @property {var} value 拖拽时需要传递的值
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
          * @property {number} clientX 鼠标指针相对于浏览器的水平位置
@@ -278,18 +266,17 @@ var Draggable = Component.extend({
          * @property {number} movementY 鼠标指针垂直位置相对于上次操作的偏移量
          * @property {function} cancel 取消拖拽操作
          */
-        this.$emit('drag', _.extend({
+        this.$emit('drag', Object.assign({
             sender: this,
             origin: this,
             source: _.dom.element(this),
-            proxy: dragdrop.proxy,
             cancel: this.cancel
          }, dragdrop));
     },
     /**
      * @private
      */
-    _dragEnd: function() {
+    _dragEnd() {
         /**
          * @event dragend 拖拽结束时触发
          * @property {object} sender 事件发送对象，为当前draggable
@@ -319,7 +306,7 @@ Draggable.Proxy = Component.extend({
     /**
      * @protected
      */
-    init: function() {
+    init() {
         if(this.$outer instanceof Draggable) {
             _.dom.element(this).style.display = 'none';
             this.$outer.data.proxy = this;
@@ -328,4 +315,4 @@ Draggable.Proxy = Component.extend({
     // node: _.noop
 });
 
-module.exports = Draggable;
+export default Draggable;

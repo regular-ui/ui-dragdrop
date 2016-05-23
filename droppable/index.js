@@ -1,37 +1,27 @@
-/**
- * ------------------------------------------------------------
- * Droppable  放置
- * @author   sensen(rainforest92@126.com)
- * ------------------------------------------------------------
- */
-
-'use strict';
-
-var Component = require('regular-ui-base/src/component');
-var _ = require('regular-ui-base/src/_');
-var dragdrop = require('./dragdrop.js');
+import {Component, util as _} from 'regular-ui-base';
+import dragdrop from '../dragdrop';
 
 /**
  * @class Droppable
  * @extend Component
  * @param {object}                  options.data                     =  绑定属性
- * @param {object}                  options.data.data               <=  拖放后传递过来的数据
+ * @param {var}                     options.data.value              <=  拖放后传递过来的值
  * @param {boolean=false}           options.data.disabled            => 是否禁用
  * @param {string='z-droppable'}    options.data.class               => 可放置时（即disabled=false）给元素附加此class
  * @param {string='z-dragover'}     options.data.dragOverClass       => 拖拽该元素上方时给元素附加此class
  */
-var Droppable = Component.extend({
+let Droppable = Component.extend({
     name: 'droppable',
     template: '{#inc this.$body}',
     /**
      * @protected
      */
-    config: function() {
-        _.extend(this.data, {
+    config() {
+        this.data = Object.assign({
             data: null,
             'class': 'z-droppable',
             dragOverClass: 'z-dragover'
-        });
+        }, this.data);
         this.supr();
 
         dragdrop.droppables.push(this);
@@ -39,30 +29,26 @@ var Droppable = Component.extend({
     /**
      * @protected
      */
-    init: function() {
-        var inner = _.dom.element(this);
-        this.$watch('disabled', function(newValue) {
-            if(newValue)
-                _.dom.delClass(inner, this.data['class']);
-            else
-                _.dom.addClass(inner, this.data['class']);
-        });
+    init() {
+        let inner = _.dom.element(this);
+        this.$watch('disabled', (newValue) =>
+            _.dom[newValue ? 'delClass' : 'addClass'](inner, this.data['class']));
         this.supr();
     },
     /**
      * @protected
      */
-    destroy: function() {
+    destroy() {
         dragdrop.droppables.splice(dragdrop.droppables.indexOf(this), 1);
         this.supr();
     },
     /**
      * @private
      */
-    _dragEnter: function(origin) {
-        var element = _.dom.element(this);
+    _dragEnter(origin) {
+        let element = _.dom.element(this);
         _.dom.addClass(element, this.data.dragOverClass);
-        
+
         /**
          * @event dragenter 拖拽进入该元素时触发
          * @property {object} sender 事件发送对象，为当前droppable
@@ -70,7 +56,7 @@ var Droppable = Component.extend({
          * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
          * @property {object} target 拖拽目标元素
-         * @property {object} data 拖拽时接收到的数据
+         * @property {object} value 拖拽时接收到的值
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
          * @property {number} clientX 鼠标指针相对于浏览器的水平位置
@@ -81,7 +67,7 @@ var Droppable = Component.extend({
          * @property {number} movementY 鼠标指针垂直位置相对于上次操作的偏移量
          * @property {function} cancel 取消拖拽操作
          */
-        this.$emit('dragenter', _.extend({
+        this.$emit('dragenter', Object.assign({
             sender: this,
             origin: origin,
             source: _.dom.element(origin),
@@ -92,10 +78,10 @@ var Droppable = Component.extend({
     /**
      * @private
      */
-    _dragLeave: function(origin) {
-        var element = _.dom.element(this);
+    _dragLeave(origin) {
+        let element = _.dom.element(this);
         _.dom.delClass(element, this.data.dragOverClass);
-        
+
         /**
          * @event dragleave 拖拽离开该元素时触发
          * @property {object} sender 事件发送对象，为当前droppable
@@ -103,7 +89,7 @@ var Droppable = Component.extend({
          * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
          * @property {object} target 拖拽目标元素
-         * @property {object} data 拖拽时接收到的数据
+         * @property {object} value 拖拽时接收到的值
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
          * @property {number} screenY 鼠标指针相对于屏幕的垂直位置
          * @property {number} clientX 鼠标指针相对于浏览器的水平位置
@@ -114,7 +100,7 @@ var Droppable = Component.extend({
          * @property {number} movementY 鼠标指针垂直位置相对于上次操作的偏移量
          * @property {function} cancel 取消拖拽操作
          */
-        this.$emit('dragleave', _.extend({
+        this.$emit('dragleave', Object.assign({
             sender: this,
             origin: origin,
             source: _.dom.element(origin),
@@ -125,9 +111,9 @@ var Droppable = Component.extend({
     /**
      * @private
      */
-    _dragOver: function(origin) {
-        var element = _.dom.element(this);
-        var dimension = _.dom.getDimension(element);
+    _dragOver(origin) {
+        let element = _.dom.element(this);
+        let dimension = _.dom.getDimension(element);
 
         /**
          * @event dragover 拖拽在该元素上方时触发
@@ -136,7 +122,7 @@ var Droppable = Component.extend({
          * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
          * @property {object} target 拖拽目标元素
-         * @property {object} data 拖拽时接收到的数据
+         * @property {object} value 拖拽时接收到的值
          * @property {number} ratioX 鼠标指针相对于接收元素所占的长度比
          * @property {number} ratioY 鼠标指针相对于接收元素所占的高度比
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
@@ -149,7 +135,7 @@ var Droppable = Component.extend({
          * @property {number} movementY 鼠标指针垂直位置相对于上次操作的偏移量
          * @property {function} cancel 取消拖拽操作
          */
-        this.$emit('dragover', _.extend({
+        this.$emit('dragover', Object.assign({
             sender: this,
             origin: origin,
             source: _.dom.element(origin),
@@ -162,12 +148,12 @@ var Droppable = Component.extend({
     /**
      * @private
      */
-    _drop: function(origin) {
-        var element = _.dom.element(this);
+    _drop(origin) {
+        let element = _.dom.element(this);
         _.dom.delClass(element, this.data.dragOverClass);
-        var dimension = _.dom.getDimension(element);
+        let dimension = _.dom.getDimension(element);
 
-        this.data.data = origin.data.data;
+        this.data.value = origin.data.value;
         this.$update();
 
         /**
@@ -177,7 +163,7 @@ var Droppable = Component.extend({
          * @property {object} source 拖拽起始元素
          * @property {object} proxy 拖拽代理元素
          * @property {object} target 拖拽目标元素
-         * @property {object} data 拖拽时接收到的数据
+         * @property {object} value 拖拽时接收到的值
          * @property {number} ratioX 鼠标指针相对于接收元素所占的长度比
          * @property {number} ratioY 鼠标指针相对于接收元素所占的高度比
          * @property {number} screenX 鼠标指针相对于屏幕的水平位置
@@ -189,7 +175,7 @@ var Droppable = Component.extend({
          * @property {number} movementX 鼠标指针水平位置相对于上次操作的偏移量
          * @property {number} movementY 鼠标指针垂直位置相对于上次操作的偏移量
          */
-        this.$emit('drop', _.extend({
+        this.$emit('drop', Object.assign({
             sender: this,
             origin: origin,
             source: _.dom.element(origin),
@@ -200,4 +186,4 @@ var Droppable = Component.extend({
     }
 });
 
-module.exports = Droppable;
+export default Droppable;

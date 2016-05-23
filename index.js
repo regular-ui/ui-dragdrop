@@ -1,4 +1,6 @@
-module.exports = {
-    Draggable: require('./src/draggable.js'),
-    Droppable: require('./src/droppable.js')
-}
+export * from 'regular-ui-base';
+
+import Draggable from './draggable';
+import Droppable from './droppable';
+
+export {Draggable, Droppable};
