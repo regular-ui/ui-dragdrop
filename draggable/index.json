@@ -1,6 +1,6 @@
 {
     "name": "Draggable",
     "lowerName": "draggable",
-    "cnName": "拖拽",
-    "type": "js"
+    "zhName": "拖拽",
+    "code": "js"
 }

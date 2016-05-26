@@ -1,4 +1,4 @@
-import {Component, util as _} from 'regular-ui-base';
+import {Component, _} from 'rgui-base';
 import dragdrop from '../dragdrop';
 
 /**
@@ -153,7 +153,7 @@ let Draggable = Component.extend({
                 dragdrop.proxy.style.display = '';
             } else
                 pointElement = document.elementFromPoint(e.clientX, e.clientY);
-            console.log(pointElement);
+            // console.log(pointElement);
 
             let pointDroppable = null;
             while(pointElement) {

@@ -1,4 +1,4 @@
-import {util as _} from 'regular-ui-base';
+import {_} from 'rgui-base';
 
 Object.assign(_.dom, {
     getPosition(elem) {

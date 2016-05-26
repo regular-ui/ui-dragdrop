@@ -1,5 +1,5 @@
 {
-  "name": "regular-ui-dragdrop",
+  "name": "rgui-dragdrop",
   "description": "Regular UI - Draggable and Droppable",
   "version": "0.2.0",
   "author": "Rainfore <rainforest92@126.com>",
@@ -11,16 +11,18 @@
   "keywords": [
     "regular",
     "ui",
+    "rgui",
     "drag",
     "drop"
   ],
   "tags": [
     "regular",
     "ui",
+    "rgui",
     "drag",
     "drop"
   ],
   "dependencies": {
-    "regular-ui-base": "regular-ui/ui-base#feature/v0.2"
+    "rgui-base": "regular-ui/ui-base#feature/v0.2"
   }
 }

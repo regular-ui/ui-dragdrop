@@ -1,4 +1,4 @@
-import {Component, util as _} from 'regular-ui-base';
+import {Component, _} from 'rgui-base';
 import dragdrop from '../dragdrop';
 
 /**
