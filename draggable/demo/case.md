@@ -1,5 +1,5 @@
 ### 案例
-#### 弹窗拖拽
+#### 可拖动的弹窗
 
 <div class="m-example"></div>
 
@@ -28,13 +28,13 @@ let component = new RGUI.Component({
 });
 ```
 
-#### 约束拖拽
+#### 拖拽约束
 
 <div class="m-example"></div>
 
 ```css
-.m-well {position: relative; overflow: hidden; height: 232px; background: #fafafa; border: 1px solid #eee; color: #999; text-align: center;}
-.u-ball {position: absolute; left: 160px; top: 120px; width: 24px; height: 24px; border-radius: 100%; background: #00c0ef;}
+.m-well {position: relative; overflow: hidden; width: 220px; height: 220px; background: #fafafa; border: 1px solid #eee; color: #999; text-align: center;}
+.u-ball {position: absolute; left: 100px; top: 100px; width: 20px; height: 20px; border-radius: 100%; background: #00c0ef;}
 ```
 
 ```xml
@@ -54,7 +54,7 @@ let component = new RGUI.Component({
     <div class="g-col g-col-4">
         <div class="m-well">
             <draggable proxy="self" ref="draggable2"><div class="u-ball"></div></draggable>
-            对角线约束
+            45度约束
         </div>
     </div>
 </div>
@@ -73,7 +73,7 @@ let component = new RGUI.Component({
     </div>
     <div class="g-col g-col-4">
         <div class="m-well">
-            <draggable proxy="self" ref="draggable5"><div class="u-ball"></div></draggable>
+            <draggable proxy="self" ref="draggable5"><div class="u-ball" style="left: 160px; top: 120px;"></div></draggable>
             圆约束
         </div>
     </div>
@@ -97,7 +97,7 @@ let component = new RGUI.Component({
         this.$refs.draggable3.restrict = (params) => {
             let next = free(params);
 
-            let min = 100, max = 180;
+            let min = 80, max = 120;
             next.left = Math.min(Math.max(min, next.left), max);
             next.top = Math.min(Math.max(min, next.top), max);
 
@@ -121,7 +121,7 @@ let component = new RGUI.Component({
             next.top *= radius/nextNorm;
             
             return next;
-        }
+        };
     }
 });
 ```

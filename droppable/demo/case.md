@@ -330,71 +330,97 @@ let component = new RGUI.Component({
 });
 ```
 
-#### 列表排序（根据鼠标位置计算）
+#### 网格排序（占位型）
 
 <div class="m-example"></div>
 
+```css
+.m-gridView {list-style: none; overflow: auto; margin: 0; padding: 0; width: 400px;}
+.m-gridView li {float: left;}
+.u-brick {box-sizing: border-box; cursor: default; width: 80px; height: 80px; margin: 8px; border: 2px solid #ddd; border-radius: 4px; line-height: 40px; text-align: center; background: #f4f4f4;}
+.m-gridView li.z-dragSource > .u-brick {border: 2px dashed #00c0ef; background: transparent; font-size: 0;}
+```
+
 ```xml
-<ul class="m-gridview">
+<droppable on-dragover={this._onListDragOver($event)}>
+<ul class="m-gridView">
     {#list list as item}
         <droppable
-            on-dragover={this._onItemDragOver($event)}>
+            on-dragover={this._onDragOver($event)}>
         <draggable
             value={item}
-            on-dragstart={this._onItemDragStart($event)}
-            on-dragend={this._onItemDragEnd($event)}>
-            <li><div class="u-app">{item.text}</div></li>
+            on-dragend={this._onDragEnd($event)}>
+            <li><div class="u-brick">{item.text}</div></li>
         </draggable>
         </droppable>
     {/list}
 </ul>
+</droppable>
 ```
 
 ```javascript
 let _ = RGUI.util;
 let list = [];
 for(let i = 0; i < 15; i++)
-    list.push({text: '选项' + i});
+    list.push({text: '选项C' + i});
 
 let component = new RGUI.Component({
     template: template,
     data: {list: list},
-    _onItemDragStart($event) {
-        $event.source.style.visibility = 'hidden';
+    _getElementIndex(element) {
+        return Array.prototype.indexOf.call(element.parentElement.children, element);
     },
-    _onItemDragOver($event) {
+    _onDragOver($event, tgt) {
         let source = $event.source;
         let target = $event.target;
-        let parent = source.parentElement;
-        let children = Array.from(parent.children);
-        let sourceIndex = children.indexOf(source);
-        let targetIndex = children.indexOf(target);
-        
-        parent.removeChild(source);
-        if(targetIndex < sourceIndex)
-            parent.insertBefore(source, target);
-        else
-            parent.insertBefore(source, target.nextElementSibling);
-    },
-    _onGridViewDragOver($event) {
-        let source = $event.source;
-        let parent = source.parentElement;
-        let last = parent.children[parent.children.length - 1];
 
-        // @TODO: 判断位置是否在最后一个外面
+        // 排除source和target相同的情况
+        if(source === target)
+            return;
+
+        let sourceParent = source.parentElement;
+        let targetParent = target.parentElement;
+        let sourceIndex = this._getElementIndex(source);
+        let targetIndex = this._getElementIndex(target);
+
+        // 删除起始元素
+        sourceParent.removeChild(source);
+
+        // 再将起始元素插入到新的位置
+        if(sourceIndex >= targetIndex || sourceParent !== targetParent)
+            targetParent.insertBefore(source, target);
+        else
+            targetParent.insertBefore(source, target.nextElementSibling);
+
+        // 记录目标列表
+        this.data.tgt = tgt;
     },
-    _onItemDragEnd($event) {
-        $event.source.style.visibility = '';
-        // 获取拖拽后起始元素的位置
+    _onListDragOver($event, tgt) {
         let source = $event.source;
-        let parent = source.parentElement;
-        let children = Array.from(parent.children);
-        let sourceIndex = children.indexOf(source);
-        // 更新list
-        let list = this.data.list;
-        let value = $event.sender.data.value;
-        list.splice(list.indexOf(value), 1);
-        list.splice(sourceIndex, 0, value);
+        let sourceParent = source.parentElement;
+        let targetParent = $event.target;
+
+        // 删除起始元素
+        sourceParent.removeChild(source);
+        // 再将起始元素插入到新的位置
+        targetParent.appendChild(source);
+
+        this.data.tgt = tgt;
+    },
+    _onDragEnd($event) {
+        let src = $event.value;
+        let tgt = this.data.tgt;
+        if(!tgt) return;
+
+        // 获取起始元素的初始位置
+        src.index = src.list.indexOf(src.item);
+        // 获取起始元素的结束位置
+        tgt.index = this._getElementIndex($event.source);
+
+        // 从起始列表中删除对象
+        src.list.splice(src.index, 1);
+        // 在目标列表中插入对象
+        tgt.list.splice(tgt.index, 0, src.item);
     }
 });
 ```

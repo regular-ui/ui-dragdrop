@@ -15,6 +15,7 @@ let Droppable = Component.extend({
     template: '{#inc this.$body}',
     /**
      * @protected
+     * @override
      */
     config() {
         this.data = Object.assign({
@@ -28,6 +29,7 @@ let Droppable = Component.extend({
     },
     /**
      * @protected
+     * @override
      */
     init() {
         let inner = _.dom.element(this);
@@ -37,6 +39,7 @@ let Droppable = Component.extend({
     },
     /**
      * @protected
+     * @override
      */
     destroy() {
         manager.droppables.splice(manager.droppables.indexOf(this), 1);
