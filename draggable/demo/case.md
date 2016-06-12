@@ -1,79 +1,127 @@
-### 无数据交换的拖拽排序
-
-#### 列表排序
+### 案例
+#### 弹窗拖拽
 
 <div class="m-example"></div>
 
 ```xml
-<ul class="m-listview">
-    {#list list as item}
-    <draggable direction="vertical"
-        on-dragstart={this._onItemDragStart($event)}
-        on-drag={this._onItemDrag($event)}
-        on-dragend={this._onItemDragEnd($event)}>
-        <li z-sel={selected === item} on-click={selected = item}>{item.text}</li>
-    </draggable>
-    {/list}
-</ul>
+<button class="u-btn u-btn-primary" on-click={visible = true}>显示弹窗</button>
+<div class="m-modal" r-hide={!visible}>
+    <div class="modal_dialog" ref="modalDialog">
+        <draggable proxy={this.$refs.modalDialog}>
+        <div class="modal_hd">
+            <a class="modal_close" on-click={visible = false}><i class="u-icon u-icon-close"></i></a>
+            <h3 class="modal_title">提示</h3>
+        </div>
+        </draggable>
+        <div class="modal_bd">请拖动标题栏</div>
+        <div class="modal_ft">
+            <button class="u-btn u-btn-primary" on-click={visible = false}>确定</button>
+        </div>
+    </div>
+</div>
 ```
 
 ```javascript
-let _ = RGUI.util;
 let component = new RGUI.Component({
-    template: template,
-    data: {
-        list: [
-            {text: '选项1'},
-            {text: '选项2'},
-            {text: '选项3'},
-            {text: '选项4'},
-            {text: '选项5'},
-        ]
-    },
-    _onItemDragStart($event) {
-        $event.source.style.visibility = 'hidden';
-    },
-    _onItemDragEnd($event) {
-        $event.source.style.visibility = '';
-    },
-    _onItemDrag($event) {
-        // 获取拖拽起始元素的位置
-        let source = $event.source;
-        let parent = source.parentElement;
-        let children = Array.from(parent.children);
-        let sourceIndex = children.indexOf(source);
+    template,
+    data: {visible: false}
+});
+```
 
-        // 获取拖拽代理元素的中点
-        let proxy = $event.proxy;
-        let proxyDimension = _.dom.getDimension(proxy);
-        let proxyMiddle = proxyDimension.top + proxyDimension.height/2;
+#### 约束拖拽
 
-        // 获取当前拖拽的位置
-        let target = null;
-        let targetIndex = -1;
-        for(let i = 0; i < parent.children.length; i++) {
-            let child = parent.children[i];
-            // 跳过拖拽起始元素和代理元素
-            if(child === source || child === proxy)
-                continue;
+<div class="m-example"></div>
 
-            let childDimension = _.dom.getDimension(child);
-            // 根据拖拽代理元素的中点，判断当前拖动到哪个位置上了
-            if(childDimension.top < proxyMiddle && childDimension.top + childDimension.height > proxyMiddle) {
-                target = child;
-                targetIndex = i;
-                break;
-            }
+```css
+.m-well {position: relative; overflow: hidden; height: 232px; background: #fafafa; border: 1px solid #eee; color: #999; text-align: center;}
+.u-ball {position: absolute; left: 160px; top: 120px; width: 24px; height: 24px; border-radius: 100%; background: #00c0ef;}
+```
+
+```xml
+<div class="g-row">
+    <div class="g-col g-col-4">
+        <div class="m-well">
+            <draggable proxy="self" ref="draggable0"><div class="u-ball"></div></draggable>
+            水平约束
+        </div>
+    </div>
+    <div class="g-col g-col-4">
+        <div class="m-well">
+            <draggable proxy="self" ref="draggable1"><div class="u-ball"></div></draggable>
+            垂直约束
+        </div>
+    </div>
+    <div class="g-col g-col-4">
+        <div class="m-well">
+            <draggable proxy="self" ref="draggable2"><div class="u-ball"></div></draggable>
+            对角线约束
+        </div>
+    </div>
+</div>
+<div class="g-row">
+    <div class="g-col g-col-4">
+        <div class="m-well">
+            <draggable proxy="self" ref="draggable3"><div class="u-ball"></div></draggable>
+            范围约束
+        </div>
+    </div>
+    <div class="g-col g-col-4">
+        <div class="m-well">
+            <draggable proxy="self" ref="draggable4"><div class="u-ball"></div></draggable>
+            网格约束
+        </div>
+    </div>
+    <div class="g-col g-col-4">
+        <div class="m-well">
+            <draggable proxy="self" ref="draggable5"><div class="u-ball"></div></draggable>
+            圆约束
+        </div>
+    </div>
+</div>
+```
+
+```javascript
+let component = new RGUI.Component({
+    template,
+    init() {
+        let free = this.$refs.draggable0.restrict;
+
+        this.$refs.draggable0.restrict = (params) =>
+            ({left: params.startLeft + params.dragX, top: params.startTop});
+        this.$refs.draggable1.restrict = (params) =>
+            ({left: params.startLeft, top: params.startTop + params.dragY});
+        this.$refs.draggable2.restrict = (params) => {
+            let min = Math.min(params.dragX, params.dragY);
+            return {left: params.startLeft + min, top: params.startTop + min};
+        };
+        this.$refs.draggable3.restrict = (params) => {
+            let next = free(params);
+
+            let min = 100, max = 180;
+            next.left = Math.min(Math.max(min, next.left), max);
+            next.top = Math.min(Math.max(min, next.top), max);
+
+            return next;
+        };
+        this.$refs.draggable4.restrict = (params) => {
+            let next = free(params);
+
+            let grid = 40;
+            next.left = Math.round(next.left/grid)*grid;
+            next.top = Math.round(next.top/grid)*grid;
+            
+            return next;
+        };
+        this.$refs.draggable5.restrict = (params) => {
+            let next = free(params);
+
+            let nextNorm = Math.sqrt(next.left*next.left + next.top*next.top);
+            let radius = 200;
+            next.left *= radius/nextNorm;
+            next.top *= radius/nextNorm;
+            
+            return next;
         }
-
-        if(!target)
-            return;
-
-        parent.removeChild(source);
-        if(targetIndex < sourceIndex)
-            parent.insertBefore(source, target);
-        else
-            parent.insertBefore(source, target.nextElementSibling);
     }
 });
 ```

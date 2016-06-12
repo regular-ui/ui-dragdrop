@@ -13,11 +13,11 @@ Object.assign(_.dom, {
 
         return {top: box.top - clientTop, left: box.left - clientLeft};
     },
-    getOffset(elem) {
+    getSize(elem) {
         return {width: elem.clientWidth, height: elem.clientHeight}
     },
     getDimension(elem, fixed) {
-        return Object.assign(this.getOffset(elem), this.getPosition(elem, fixed));
+        return Object.assign(this.getSize(elem), this.getPosition(elem, fixed));
     },
     isInRect(position, dimension) {
         if(!position || !dimension)
@@ -30,7 +30,7 @@ Object.assign(_.dom, {
     }
 });
 
-let dragdrop = {
+let manager = {
     dragging: false,
     value: undefined,
     proxy: undefined,
@@ -40,10 +40,16 @@ let dragdrop = {
     clientY: 0,
     pageX: 0,
     pageY: 0,
-    movementX: 0,
-    movementY: 0,
+    startX: 0,
+    startY: 0,
+    dragX: 0,
+    dragY: 0,
+    startLeft: 0,
+    startTop: 0,
+    dragLeft: 0,
+    dragTop: 0,
     droppable: undefined,
     droppables: []
 }
 
-export default dragdrop;
+export default manager;

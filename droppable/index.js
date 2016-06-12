@@ -1,5 +1,5 @@
 import {Component, _} from 'rgui-base';
-import dragdrop from '../dragdrop';
+import manager from '../manager';
 
 /**
  * @class Droppable
@@ -8,7 +8,7 @@ import dragdrop from '../dragdrop';
  * @param {var}                     options.data.value              <=  拖放后传递过来的值
  * @param {boolean=false}           options.data.disabled            => 是否禁用
  * @param {string='z-droppable'}    options.data.class               => 可放置时（即disabled=false）给元素附加此class
- * @param {string='z-dragover'}     options.data.dragOverClass       => 拖拽该元素上方时给元素附加此class
+ * @param {string='z-dragover'}     options.data.dragTarget       => 拖拽该元素上方时给元素附加此class
  */
 let Droppable = Component.extend({
     name: 'droppable',
@@ -20,11 +20,11 @@ let Droppable = Component.extend({
         this.data = Object.assign({
             data: null,
             'class': 'z-droppable',
-            dragOverClass: 'z-dragover'
+            dragTarget: 'z-dragTarget'
         }, this.data);
         this.supr();
 
-        dragdrop.droppables.push(this);
+        manager.droppables.push(this);
     },
     /**
      * @protected
@@ -39,7 +39,7 @@ let Droppable = Component.extend({
      * @protected
      */
     destroy() {
-        dragdrop.droppables.splice(dragdrop.droppables.indexOf(this), 1);
+        manager.droppables.splice(manager.droppables.indexOf(this), 1);
         this.supr();
     },
     /**
@@ -47,7 +47,7 @@ let Droppable = Component.extend({
      */
     _dragEnter(origin) {
         let element = _.dom.element(this);
-        _.dom.addClass(element, this.data.dragOverClass);
+        _.dom.addClass(element, this.data.dragTarget);
 
         /**
          * @event dragenter 拖拽进入该元素时触发
@@ -73,14 +73,14 @@ let Droppable = Component.extend({
             source: _.dom.element(origin),
             target: element,
             cancel: origin.cancel
-        }, dragdrop));
+        }, manager));
     },
     /**
      * @private
      */
     _dragLeave(origin) {
         let element = _.dom.element(this);
-        _.dom.delClass(element, this.data.dragOverClass);
+        _.dom.delClass(element, this.data.dragTarget);
 
         /**
          * @event dragleave 拖拽离开该元素时触发
@@ -106,7 +106,7 @@ let Droppable = Component.extend({
             source: _.dom.element(origin),
             target: element,
             cancel: origin.cancel
-        }, dragdrop));
+        }, manager));
     },
     /**
      * @private
@@ -140,17 +140,17 @@ let Droppable = Component.extend({
             origin: origin,
             source: _.dom.element(origin),
             target: element,
-            ratioX: (dragdrop.clientX - dimension.left)/dimension.width,
-            ratioY: (dragdrop.clientY - dimension.top)/dimension.height,
+            ratioX: (manager.clientX - dimension.left)/dimension.width,
+            ratioY: (manager.clientY - dimension.top)/dimension.height,
             cancel: origin.cancel
-        }, dragdrop));
+        }, manager));
     },
     /**
      * @private
      */
     _drop(origin) {
         let element = _.dom.element(this);
-        _.dom.delClass(element, this.data.dragOverClass);
+        _.dom.delClass(element, this.data.dragTarget);
         let dimension = _.dom.getDimension(element);
 
         this.data.value = origin.data.value;
@@ -180,9 +180,9 @@ let Droppable = Component.extend({
             origin: origin,
             source: _.dom.element(origin),
             target: element,
-            ratioX: (dragdrop.clientX - dimension.left)/dimension.width,
-            ratioY: (dragdrop.clientY - dimension.top)/dimension.height
-        }, dragdrop));
+            ratioX: (manager.clientX - dimension.left)/dimension.width,
+            ratioY: (manager.clientY - dimension.top)/dimension.height
+        }, manager));
     }
 });
 
