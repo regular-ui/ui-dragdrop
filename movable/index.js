@@ -2,7 +2,7 @@ import Draggable from '../draggable';
 import manager from '../manager';
 
 /**
- * @class Dragger
+ * @class Movable
  * @extend Draggable
  * @param {object}                  options.data                     =  绑定属性
  * @param {string='both'}           options.data.axis                => 拖拽代理移动时限制的轴向，`both`表示可以在任意方向上移动，`horizontal`表示限制在水平方向上移动，`vertical`表示限制在垂直方向上移动
@@ -10,8 +10,8 @@ import manager from '../manager';
  * @param {string='z-draggable'}    options.data.class               => 可拖拽时（即disabled=false）给元素附加此class
  * @param {string='z-drag'}         options.data.dragClass           => 拖拽该元素时给元素附加此class
  */
-let Dragger = Draggable.extend({
-    name: 'dragger',
+let Movable = Draggable.extend({
+    name: 'movable',
     template: '{#inc this.$body}',
     /**
      * @protected
@@ -72,6 +72,10 @@ let Dragger = Draggable.extend({
             }
         }
 
+        if(this.data.grid) {
+
+        }
+
         if(this.data.axis === 'vertical')
             next.left = params.startLeft;
         if(this.data.axis === 'horizontal')
@@ -81,4 +85,4 @@ let Dragger = Draggable.extend({
     }
 });
 
-export default Dragger;
+export default Movable;

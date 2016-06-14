@@ -1,5 +1,5 @@
 import Draggable from './draggable';
 import Droppable from './droppable';
-import Dragger from './dragger';
+import Movable from './movable';
 
-export {Draggable, Droppable, Dragger};
+export {Draggable, Droppable, Movable};

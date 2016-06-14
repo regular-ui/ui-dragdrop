@@ -8,10 +8,19 @@
     <div class="g-col g-col-6">
         <div class="u-slider">
             <div class="slider_bar" style="width: {percent}%"></div>
-            <dragger axis="horizontal" range="parent" rangeMode="none"
+            <movable axis="horizontal" range="parent" rangeMode="none"
                 on-drag={this._onDrag($event)}>
                 <div class="slider_btn" style="left: {percent}%"></div>
-            </dragger>
+            </movable>
+        </div>
+    </div>
+    <div class="g-col g-col-6">
+        <div class="u-slider">
+            <div class="slider_bar" style="width: {percent2}%"></div>
+            <movable axis="horizontal" range="parent" rangeMode="none" grid={ [20, 1] }
+                on-drag={this._onDrag($event)}>
+                <div class="slider_btn" style="left: {percent2}%"></div>
+            </movable>
         </div>
     </div>
 </div>
@@ -38,7 +47,8 @@
 let component = new RGUI.Component({
     template: template,
     data: {
-        percent: 20
+        percent: 20,
+        percent2: 20
     },
     _onDrag($event) {
         this.data.percent = $event.currentLeft/$event.range.right*100;
@@ -54,9 +64,9 @@ let component = new RGUI.Component({
 ```xml
 <div class="m-pallette">
     <div class="pallette_SV">
-        <dragger range="parent" rangeMode="none">
+        <movable range="parent" rangeMode="none">
             <div class="pallette_SV_btn" style="left: 100px; top: 100px;"></div>
-        </dragger>
+        </movable>
     </div>
 </div>
 ```

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+.m-dropzone {background: #eee; color: #999; border: 3px dashed #ddd; border-radius: 8px; min-width: 320px; min-height: 320px; line-height: 320px; font-size: 24px; text-align: center;}
+.m-dropzone img {display: block; margin: 0 auto;}
+</style>
+</head>
+<body>
+<div class="m-dropzone" ondragover="onDragOver(event)" ondrop="onDrop(event, this)">Drop Image Here</div>
+<script>
+function onDragOver(e) {
+    e.preventDefault();    // 不能少
+}
+function onDrop(e, $dropzone) {
+    e.preventDefault();
+    var file = e.dataTransfer.files[0];
+    if(!file)
+        return;
+
+    var reader = new FileReader();
+    // 将文件以Data URL形式进行读入页面
+    reader.readAsDataURL(file);
+    reader.onload = function() {
+        $dropzone.innerHTML = '<img src="' + this.result + '" />';
+    }
+}
+</script>
+</body>
+</html>
