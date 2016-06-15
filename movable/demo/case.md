@@ -14,44 +14,25 @@
             </movable>
         </div>
     </div>
-    <div class="g-col g-col-6">
-        <div class="u-slider">
-            <div class="slider_bar" style="width: {percent2}%"></div>
-            <movable axis="horizontal" range="parent" rangeMode="none" grid={ [20, 1] }
-                on-drag={this._onDrag($event)}>
-                <div class="slider_btn" style="left: {percent2}%"></div>
-            </movable>
-        </div>
-    </div>
 </div>
 ```
 
 ```css
 .u-slider {position: relative; height: 6px; line-height: 6px; background: #e6e6e6;}
-    .slider_bar {float: left; height: 6px; line-height: 6px; background: #67aaf5;}
-    .slider_btn {
-        box-sizing: border-box;
-        position: absolute;
-        left: 0;
-        margin-top: -9px;
-        margin-left: -7px;
-        width: 14px;
-        height: 24px;
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 2px;
+.u-slider .slider_bar {float: left; height: 6px; line-height: 6px; background: #67aaf5;}
+.u-slider .slider_btn {
+        box-sizing: border-box; position: absolute; left: 0;
+        margin-top: -9px; margin-left: -7px; width: 14px; height: 24px;
+        background: #fff; border: 1px solid #ccc; border-radius: 2px;
     }
 ```
 
 ```javascript
 let component = new RGUI.Component({
     template: template,
-    data: {
-        percent: 20,
-        percent2: 20
-    },
+    data: {percent: 20},
     _onDrag($event) {
-        this.data.percent = $event.currentLeft/$event.range.right*100;
+        this.data.percent = $event.left/$event.range.right*100;
     }
 });
 
@@ -81,4 +62,44 @@ let component = new RGUI.Component({
 .m-pallette .pallette_SV:before {background: linear-gradient(to right, white, rgba(255, 255, 255, 0));}
 .m-pallette .pallette_SV:after {background: linear-gradient(to top, black, rgba(0, 0, 0, 0));}
 .m-pallette .pallette_SV_btn {box-sizing: border-box; position: absolute; z-index: 5; margin-left: -8px; margin-top: -8px; width: 16px; height: 16px; border: 1px solid white; border-radius: 100%; box-shadow: 0 0 1px rgba(0, 0, 0, .5), inset 0 0 1px rgba(0, 0, 0, .5);}
+```
+
+#### Resizable
+
+<div class="m-example"></div>
+
+```xml
+<div class="m-resizable" style="width: {width}px; height: {height}px;">
+    <div class="m-panel m-panel-info">
+        <div class="panel_bd">Content</div>
+    </div>
+    <movable range={ {left: 100, top: 100, right: 300, bottom: 200} } rangeMode="none" on-drag={this._onDrag($event)}>
+        <div class="resizable_handle" style="left: {width}px; top: {height}px;"></div>
+    </movable>
+</div>
+```
+
+```css
+.m-panel {width: 100%; height: 100%; box-sizing: border-box;}
+.m-resizable {position: relative;}
+.m-resizable .resizable_handle {
+    cursor: nwse-resize;
+    position: absolute; z-index: 20;
+    width: 10px; height: 10px;
+    margin-right: -5px; margin-bottom: -5px;
+}
+```
+
+```javascript
+let component = new RGUI.Component({
+    template: template,
+    data: {
+        width: 240,
+        height: 120
+    },
+    _onDrag($event) {
+        this.data.width = $event.left;
+        this.data.height = $event.top;
+    }
+});
 ```

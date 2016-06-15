@@ -34,15 +34,7 @@
     ondrop="onDrop(event)">
     dropzone
 </div>
-<div class="m-test">wefwefewf</div>
-
 <script>
-document.body.onselectstart = function() {
-    if(this.dragDrop) {
-        this.dragDrop();
-        return false;
-    }
-}
 function onDragStart(e) {
     // console.log('dragStart');
     e.dataTransfer.effectAllowed = 'move';

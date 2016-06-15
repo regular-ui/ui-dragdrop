@@ -41,11 +41,18 @@ let Movable = Draggable.extend({
         let range;
         if(this.data.range === 'parent')
             range = proxy.parentElement;
+        else if(typeof this.data.range === 'object')
+            range = this.data.range;
 
         if(range instanceof Element) {
             if(proxy.offsetParent === range) {
                 range = {left: 0, top: 0, right: range.offsetWidth, bottom: range.offsetHeight};
             }
+        }
+
+        if(range) {
+            range.width = range.right - range.left;
+            range.height = range.bottom - range.top;
         }
 
         return range;

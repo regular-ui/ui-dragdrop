@@ -158,8 +158,8 @@ let Draggable = Component.extend({
             droppable: undefined
         });
 
-        manager.currentLeft = manager.startLeft;
-        manager.currentTop = manager.startTop;
+        manager.left = manager.startLeft;
+        manager.top = manager.startTop;
 
         this._dragStart();
     },
@@ -187,8 +187,8 @@ let Draggable = Component.extend({
         manager.proxy.style.left = next.left + 'px';
         manager.proxy.style.top = next.top + 'px';
         // 更新当前位置
-        manager.currentLeft = next.left;
-        manager.currentTop = next.top;
+        manager.left = next.left;
+        manager.top = next.top;
 
         this._drag();
         if(!manager.dragging)
