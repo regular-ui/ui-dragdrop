@@ -27,16 +27,16 @@
 <![endif]-->
 </head>
 <body>
-<div class="g-top g-top-fixed">
+<div class="g-top">
     <div class="g-topc">
-        <a class="u-logo" href="./"><h1>Regular UI</h1></a>
+        <a class="u-logo" href="./">Regular UI</a>
     </div>
 </div>
 <div class="g-bd"><div class="g-bdc"><div class="g-mn g-mn-center">
     <article class="m-article">
-        <h2><small> Droppable</small></h2>
-        <h3 id="-">案例</h3>
-<h4 id="-">列表排序（占位型）</h4>
+        <h1><small> Droppable</small></h1>
+        <h2 id="案例">案例</h2>
+<h3 id="列表排序（占位型）">列表排序（占位型）</h3>
 <div class="m-example"></div>
 
 <pre class="lang-xml"><code><span class="cm-tagcm-bracket">&lt;</span><span class="cm-tag">div</span> <span class="cm-attribute">class</span>=<span class="cm-string">&quot;g-row&quot;</span><span class="cm-tagcm-bracket">&gt;</span>
@@ -148,7 +148,7 @@
     }
 });
 </code></pre>
-<h4 id="-">网格排序（占位型）</h4>
+<h3 id="网格排序（占位型）">网格排序（占位型）</h3>
 <div class="m-example"><style>.m-gridView {list-style: none; overflow: auto; margin: 0; padding: 0; width: 400px;}
 .m-gridView li {float: left;}
 .u-brick {box-sizing: border-box; cursor: default; width: 80px; height: 80px; margin: 8px; border: 2px solid #ddd; border-radius: 4px; line-height: 40px; text-align: center; background: #f4f4f4;}
@@ -239,7 +239,7 @@
     }
 });
 </code></pre>
-<h4 id="-">列表排序（标记型）</h4>
+<h3 id="列表排序（标记型）">列表排序（标记型）</h3>
 <div class="m-example"><style>.m-listview {padding: 0;}
 .m-listview > li.z-dragProxy {opacity: 0.7;}
 .m-listview > li.z-dragTarget.z-dragTarget-before:before, .m-listview > li.z-dragTarget.z-dragTarget-after:after {
@@ -339,7 +339,7 @@
     }
 });
 </code></pre>
-<h4 id="-">列表排序（标记型） - 加强版</h4>
+<h3 id="列表排序（标记型）---加强版">列表排序（标记型） - 加强版</h3>
 <div class="m-example"><style>.m-listview-gutter {padding: 7px 0; min-height: 240px;}
 .m-listview-gutter > li {padding: 3px 10px;}
 .m-listview-gutter > li:hover {background: none;}
@@ -458,6 +458,7 @@
 });
 </code></pre>
 
+        
     </article>
 </div>
 </div></div><div class="g-ft">
@@ -476,6 +477,9 @@
 <script src="../js/index.js"></script>
 <script>
 var $$ = function(selector){return document.querySelectorAll(selector)};
+$$('.m-article > h2, .m-article > h3').forEach(function($heading) {
+    $heading.innerHTML = '<a href="#' + $heading.id + '">' + $heading.innerText + '</a>';
+});
 </script>
 <script>
 'use strict';

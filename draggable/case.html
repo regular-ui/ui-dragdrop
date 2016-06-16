@@ -27,16 +27,16 @@
 <![endif]-->
 </head>
 <body>
-<div class="g-top g-top-fixed">
+<div class="g-top">
     <div class="g-topc">
-        <a class="u-logo" href="./"><h1>Regular UI</h1></a>
+        <a class="u-logo" href="./">Regular UI</a>
     </div>
 </div>
 <div class="g-bd"><div class="g-bdc"><div class="g-mn g-mn-center">
     <article class="m-article">
-        <h2>拖拽<small> Draggable</small></h2>
-        <h3 id="-">案例</h3>
-<h4 id="-">可拖动的弹窗</h4>
+        <h1>拖拽<small> Draggable</small></h1>
+        <h2 id="案例">案例</h2>
+<h3 id="可拖动的弹窗">可拖动的弹窗</h3>
 <div class="m-example"></div>
 
 <pre class="lang-xml"><code><span class="cm-tagcm-bracket">&lt;</span><span class="cm-tag">button</span> <span class="cm-attribute">class</span>=<span class="cm-string">&quot;u-btn u-btn-primary&quot;</span> <span class="cm-attribute">on-click</span>=<span class="cm-attribute">{visible</span> = <span class="cm-attribute">true}</span><span class="cm-tagcm-bracketcm-error">&gt;</span>显示弹窗<span class="cm-tagcm-bracket">&lt;/</span><span class="cm-tag">button</span><span class="cm-tagcm-bracket">&gt;</span>
@@ -60,7 +60,7 @@
     <span class="cm-property">data</span>: {<span class="cm-property">visible</span>: <span class="cm-atom">false</span>}
 });
 </code></pre>
-<h4 id="-">拖拽约束</h4>
+<h3 id="拖拽约束">拖拽约束</h3>
 <div class="m-example"><style>.m-well {position: relative; overflow: hidden; width: 220px; height: 220px; background: #fafafa; border: 1px solid #eee; color: #999; text-align: center;}
 .u-ball {position: absolute; left: 100px; top: 100px; width: 20px; height: 20px; border-radius: 100%; background: #00c0ef;}</style></div>
 
@@ -153,6 +153,7 @@
 });
 </code></pre>
 
+        
     </article>
 </div>
 </div></div><div class="g-ft">
@@ -171,6 +172,9 @@
 <script src="../js/index.js"></script>
 <script>
 var $$ = function(selector){return document.querySelectorAll(selector)};
+$$('.m-article > h2, .m-article > h3').forEach(function($heading) {
+    $heading.innerHTML = '<a href="#' + $heading.id + '">' + $heading.innerText + '</a>';
+});
 </script>
 <script>
 "use strict";
