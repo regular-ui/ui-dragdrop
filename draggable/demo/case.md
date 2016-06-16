@@ -1,5 +1,5 @@
-### 案例
-#### 可拖动的弹窗
+## 案例
+### 可拖动的弹窗
 
 <div class="m-example"></div>
 
@@ -28,7 +28,7 @@ let component = new RGUI.Component({
 });
 ```
 
-#### 拖拽约束
+### 拖拽约束
 
 <div class="m-example"></div>
 

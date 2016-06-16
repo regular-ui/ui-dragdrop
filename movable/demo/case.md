@@ -1,5 +1,5 @@
-### 案例
-#### Slider
+## 案例
+### Slider
 
 <div class="m-example"></div>
 
@@ -38,7 +38,7 @@ let component = new RGUI.Component({
 
 ```
 
-#### Pallette
+### Pallette
 
 <div class="m-example"></div>
 
@@ -64,7 +64,7 @@ let component = new RGUI.Component({
 .m-pallette .pallette_SV_btn {box-sizing: border-box; position: absolute; z-index: 5; margin-left: -8px; margin-top: -8px; width: 16px; height: 16px; border: 1px solid white; border-radius: 100%; box-shadow: 0 0 1px rgba(0, 0, 0, .5), inset 0 0 1px rgba(0, 0, 0, .5);}
 ```
 
-#### Resizable
+### Resizable
 
 <div class="m-example"></div>
 

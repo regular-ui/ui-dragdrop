@@ -1,6 +1,6 @@
-### 案例
+## 案例
 
-#### 列表排序（占位型）
+### 列表排序（占位型）
 
 <div class="m-example"></div>
 
@@ -117,7 +117,7 @@ let component = new RGUI.Component({
 });
 ```
 
-#### 网格排序（占位型）
+### 网格排序（占位型）
 
 <div class="m-example"></div>
 
@@ -212,7 +212,7 @@ let component = new RGUI.Component({
 });
 ```
 
-#### 列表排序（标记型）
+### 列表排序（标记型）
 
 <div class="m-example"></div>
 
@@ -311,7 +311,7 @@ let component = new RGUI.Component({
 });
 ```
 
-#### 列表排序（标记型） - 加强版
+### 列表排序（标记型） - 加强版
 
 <div class="m-example"></div>
 
